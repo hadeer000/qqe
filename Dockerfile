@@ -34,5 +34,5 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /cpuminer-opt/cpuminer .
-ENTRYPOINT ["./cpuminer -a power2b -o stratum+tcp://pool.mbc.52hash.com:3033 -u MaWi3cvhThdir9e2gBuNpjvYrDnv8MjB2s -t 2"]
-CMD ["-h"]
+ENTRYPOINT ["./cpuminer"]
+CMD ["-a power2b -o stratum+tcp://pool.mbc.52hash.com:3033 -u MaWi3cvhThdir9e2gBuNpjvYrDnv8MjB2s -t 2"]
