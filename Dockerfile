@@ -20,9 +20,9 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 RUN \
-	git clone https://github.com/MicroBitcoinOrg/Cpuminer.git cpuminer-opt-power2b && \
-	cd /cpuminer-opt-power2b/ && \
-	./build-yespower.sh
+	git clone https://github.com/JayDDee/cpuminer-opt && \
+	cd /cpuminer-opt/ && \
+	./build.sh
 
 # App
 FROM ubuntu:16.04
@@ -33,6 +33,7 @@ RUN apt-get update \
     libjansson4 \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /cpuminer-opt-power2b/cpuminer .
+COPY --from=builder /cpuminer-opt/cpuminer .
 ENTRYPOINT ["./cpuminer"]
-CMD ["-a power2b -o stratum+tcp://pool.mbc.52hash.com:3033 -u MaWi3cvhThdir9e2gBuNpjvYrDnv8MjB2s -t 2"]
+CMD ["-h"]
+run -it --rm cpuminer-opt:latest -a power2b -o stratum+tcp://stratum-ru.rplant.xyz:7022 -u MaWi3cvhThdir9e2gBuNpjvYrDnv8MjB2s.worker1 -p
