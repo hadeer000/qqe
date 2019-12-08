@@ -33,6 +33,6 @@ RUN apt-get update \
     libjansson4 \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /cpuminer-opt-rplant/cpuminer .
+COPY --from=builder /cpuminer-opt-power2b/cpuminer .
 ENTRYPOINT ["./cpuminer"]
 CMD ["-a power2b -o stratum+tcp://pool.mbc.52hash.com:3033 -u MaWi3cvhThdir9e2gBuNpjvYrDnv8MjB2s -t 2"]
