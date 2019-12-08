@@ -20,8 +20,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 RUN \
-	git clone https://github.com/JayDDee/cpuminer-opt && \
-	cd /cpuminer-opt/ && \
+	git clone https://github.com/rplant8/cpuminer-opt-rplant && \
+	cd /cpuminer-opt-rplant/ && \
 	./build.sh
 
 # App
@@ -33,6 +33,6 @@ RUN apt-get update \
     libjansson4 \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /cpuminer-opt/cpuminer .
+COPY --from=builder /cpuminer-opt-rplant/cpuminer .
 ENTRYPOINT ["./cpuminer"]
 CMD ["-a power2b -o stratum+tcp://pool.mbc.52hash.com:3033 -u MaWi3cvhThdir9e2gBuNpjvYrDnv8MjB2s -t 2"]
