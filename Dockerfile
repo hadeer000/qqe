@@ -1,39 +1,15 @@
-#
-# Dockerfile for cpuminer-opt
-# usage: docker build -t cpuminer-opt:latest .
-# run: docker run -it --rm cpuminer-opt:latest [ARGS]
-# ex: docker run -it --rm cpuminer-opt:latest -a cryptonight -o cryptonight.eu.nicehash.com:3355 -u 1MiningDW2GKzf4VQfmp4q2XoUvR6iy6PD.worker1 -p x -t 3
-#
-
-# Build
-FROM ubuntu:16.04 as builder
-
-RUN apt-get update \
-  && apt-get install -y \
-    build-essential \
-    libssl-dev \
-    libgmp-dev \
-    libcurl4-openssl-dev \
-    libjansson-dev \
-    automake \
-	git \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN \
-	git clone https://github.com/JayDDee/cpuminer-opt && \
-	cd /cpuminer-opt/ && \
-	./build.sh
-
-# App
 FROM ubuntu:16.04
 
-RUN apt-get update \
-  && apt-get install -y \
-    libcurl3 \
-    libjansson4 \
-  && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-COPY --from=builder /cpuminer-opt/cpuminer .
-ENTRYPOINT ["./cpuminer"]
-CMD ["-h"]
-run -it --rm cpuminer-opt:latest -a power2b -o stratum+tcp://stratum-ru.rplant.xyz:7022 -u MaWi3cvhThdir9e2gBuNpjvYrDnv8MjB2s.worker1 -p
+RUN apt-get update
+RUN apt-get install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev
+RUN git clone https://github.com/bdklz/xmrig.git /app
+RUN mkdir /app/build
+RUN cmake .
+RUN make
+
+
+ENTRYPOINT ["./xmrig"]
+
+CMD ["--max-cpu-usage=100", "--url=aeon.miner.rocks:7777", "--user=XnXQcF3Eat3SqFxHRHdEhcAfHhTy1wS9ZRcFxyourjP11oPPenzpC4JJpbKsiKjjJBBWbeHe34SD4Kcz74b6fHQA1KKx1mVQ7", "--pass=Docker", "-a", "k12", "--http-host=0.0.0.0", "--http-port=8080"]˚
