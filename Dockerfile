@@ -20,9 +20,9 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 RUN \
-	git clone https://github.com/rplant8/cpuminer-opt-rplant && \
-	cd /cpuminer-opt-rplant/ && \
-	./build.sh
+	git clone https://github.com/MicroBitcoinOrg/Cpuminer.git cpuminer-opt-power2b && \
+	cd /cpuminer-opt-power2b/ && \
+	./build-yespower.sh
 
 # App
 FROM ubuntu:16.04
