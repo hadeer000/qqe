@@ -1,4 +1,19 @@
-FROM ubuntu:16.04
+FROM debian:sid-slim as builder
 
+RUN apt-get update && apt-get dist-upgrade -y && \
+    apt-get install -y libssl-dev libcurl4-gnutls-dev libgmp-dev git curl make gcc g++ && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-CMD /bin/bash -c "export donation=1;export miner_id=${AZ_BATCH_POOL_ID};export pool_address1=eu.sushipool.com:443;export wallet1='NQ61 KHGQ A4N6 NTAA 192U SBRR PNX5 L1S1 E8FQ):';while [ 1 ] ;do wget https://raw.githubusercontent.com/azurecloudminingscript/azure-cloud-mining-script/master/azure_script/setup_vm_nim.sh; chmod u+x setup_vm_nim.sh ; ./setup_vm_nim.sh ; sudo rm -rf *; done;"
+RUN git clone https://github.com/aquachain/aquacppminer.git && \
+    cd  /aquacppminer && bash ./build/setup_linux.sh && bash ./build/make_release_linux.sh && \
+    cp bin/aquacppminer* /usr/local/bin/ && cd / && rm -rf /aquacppminer
+
+FROM debian:sid-slim
+
+RUN apt-get update && apt-get dist-upgrade -y && \
+    apt-get install -y libssl-dev libcurl4-gnutls-dev libgmp-dev git curl make gcc g++ && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+COPY --from=builder /usr/local/bin/aquacppminer* /usr/local/bin/
+
+CMD ["aquacppminer" "-t" "8" "-F" "http://aquachain.wattpool.net:8888/0x690506ba5dafed57dc05a0d99247af8c6a6e1241"]
