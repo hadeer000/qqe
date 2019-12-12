@@ -1,15 +1,23 @@
 FROM ubuntu:16.04
+MAINTAINER Jens Peter Secher <jpsecher@gmail.com>
 
-WORKDIR /app
+RUN apt-get update && apt-get install -y curl
 
-RUN apt-get update
-RUN apt-get install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev
-RUN git clone https://github.com/stoffu/xmrig.git /app
-RUN mkdir /app/build
-RUN cmake .
-RUN make
+COPY nimiq-signing-key.pub /
+RUN apt-key add nimiq-signing-key.pub && \
+    rm -f nimiq-signing-key.pub
 
+ARG VERSION=1.5.3-1
+COPY nimiq_${VERSION}_amd64.deb.asc nimiq_${VERSION}_amd64.deb.sha256sum /
+RUN curl -O https://repo.nimiq.com/deb/pool/stable/main/n/nimiq/nimiq_${VERSION}_amd64.deb && \
+    sha256sum -c nimiq_${VERSION}_amd64.deb.sha256sum && \
+    dpkg -i nimiq_${VERSION}_amd64.deb && \
+    rm -f nimiq_${VERSION}_amd64.deb nimiq_${VERSION}_amd64.deb.asc nimiq_${VERSION}_amd64.deb.sha256sum
 
-ENTRYPOINT ["./xmrig"]
+ENV HOME=/home/nimiq
+RUN mkdir -p $HOME && chown nimiq:nimiq $HOME
+WORKDIR $HOME
+USER nimiq
 
-CMD ["--max-cpu-usage=100", "--url=aeon.miner.rocks:7777", "--user=XnXQcF3Eat3SqFxHRHdEhcAfHhTy1wS9ZRcFxyourjP11oPPenzpC4JJpbKsiKjjJBBWbeHe34SD4Kcz74b6fHQA1KKx1mVQ7", "--pass=Docker", "-a", "k12", "--http-host=0.0.0.0", "--http-port=8080"]˚
+ENTRYPOINT ["/usr/share/nimiq/app/node", "/usr/share/nimiq/app/index.js", "--protocol=dumb", "--miner"]
+CMD ["--pool=eu.nimpool.io:8444", "--wallet-address=NQ6272GHCS6H3XL5L09SFGAM34MK7CU11JFE"]
