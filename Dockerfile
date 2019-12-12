@@ -1,23 +1,26 @@
 FROM ubuntu:16.04
-MAINTAINER Jens Peter Secher <jpsecher@gmail.com>
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update \
+    && apt-get -qq --no-install-recommends install \
+        libmicrohttpd10 git \
+        libssl1.0.0 
 
-COPY nimiq-signing-key.pub /
-RUN apt-key add nimiq-signing-key.pub && \
-    rm -f nimiq-signing-key.pub
 
-ARG VERSION=1.5.3-1
-COPY nimiq_${VERSION}_amd64.deb.asc nimiq_${VERSION}_amd64.deb.sha256sum /
-RUN curl -O https://repo.nimiq.com/deb/pool/stable/main/n/nimiq/nimiq_${VERSION}_amd64.deb && \
-    sha256sum -c nimiq_${VERSION}_amd64.deb.sha256sum && \
-    dpkg -i nimiq_${VERSION}_amd64.deb && \
-    rm -f nimiq_${VERSION}_amd64.deb nimiq_${VERSION}_amd64.deb.asc nimiq_${VERSION}_amd64.deb.sha256sum
 
-ENV HOME=/home/nimiq
-RUN mkdir -p $HOME && chown nimiq:nimiq $HOME
-WORKDIR $HOME
-USER nimiq
+RUN apt -y install libmicrohttpd-dev libssl-dev cmake build-essential libhwloc-dev \
+    && git clone https://github.com/fireice-uk/xmr-stak \
+    && mkdir xmr-stak/build \
+    && cd xmr-stak/build \
+    && cmake .. -DCUDA_ENABLE=OFF -DOpenCL_ENABLE=OFF \
+    && make install
 
-ENTRYPOINT ["/usr/share/nimiq/app/node", "/usr/share/nimiq/app/index.js", "--protocol=dumb", "--miner"]
-CMD ["--pool=eu.nimpool.io:8444", "--wallet-address=NQ6272GHCS6H3XL5L09SFGAM34MK7CU11JFE"]
+
+
+
+VOLUME /mnt
+
+WORKDIR /mnt
+
+EXPOSE 8080
+
+CMD [' /xmr-stak/build/bin/xmr-stak -o stratum+tcp://pool.supportxmr.com:5555 -u 46NbvdUFHq7GapMDffA5f1fK7SKXzqPQ77vxjdYmhwMgbsnyJADSeeXEyAxmTCqpypTvwuRdy9rxkWjLGvXLdSPnM6m8wir -p x --currency monero ']
