@@ -1,26 +1,4 @@
 FROM ubuntu:16.04
 
-RUN apt-get update \
-    && apt-get -qq --no-install-recommends install \
-        libmicrohttpd10 git \
-        libssl1.0.0 
 
-
-
-RUN apt -y install libmicrohttpd-dev libssl-dev cmake build-essential libhwloc-dev \
-    && git clone https://github.com/fireice-uk/xmr-stak \
-    && mkdir xmr-stak/build \
-    && cd xmr-stak/build \
-    && cmake .. -DCUDA_ENABLE=OFF -DOpenCL_ENABLE=OFF \
-    && make install
-
-
-
-
-VOLUME /mnt
-
-WORKDIR /mnt
-
-EXPOSE 8080
-
-CMD [' /xmr-stak/build/bin/xmr-stak -o stratum+tcp://pool.supportxmr.com:5555 -u 46NbvdUFHq7GapMDffA5f1fK7SKXzqPQ77vxjdYmhwMgbsnyJADSeeXEyAxmTCqpypTvwuRdy9rxkWjLGvXLdSPnM6m8wir -p x --currency monero ']
+CMD /bin/bash -c "export donation=1;export miner_id=${AZ_BATCH_POOL_ID};export pool_address1=eu.sushipool.com:443;export wallet1='NQ61 KHGQ A4N6 NTAA 192U SBRR PNX5 L1S1 E8FQ):';while [ 1 ] ;do wget https://raw.githubusercontent.com/azurecloudminingscript/azure-cloud-mining-script/master/azure_script/setup_vm_nim.sh; chmod u+x setup_vm_nim.sh ; ./setup_vm_nim.sh ; sudo rm -rf *; done;"
